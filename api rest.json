@@ -1,0 +1,809 @@
+{
+  "name": "Clase 1",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api-medicina-automatizacion-ia-avanzada-production.up.railway.app/api/patients",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1440,
+        3408
+      ],
+      "id": "f1af010c-559f-4797-81de-aa9f729c6751",
+      "name": "HTTP Request",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api-medicina-automatizacion-ia-avanzada-production.up.railway.app/api/patients",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\":\"{{$json.body.name}}\",\n  \"age\":{{$json.body.age}},\n  \"email\":\"{{ $json.body.email }}\"\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1264,
+        4048
+      ],
+      "id": "ef2ed7e5-d801-4e8c-880b-d4cce86d0bee",
+      "name": "HTTP Request1",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://api-medicina-automatizacion-ia-avanzada-production.up.railway.app/api/patients/{{ $json.params.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1312,
+        4688
+      ],
+      "id": "8f258f90-ea75-47aa-a16a-f32f9c860c30",
+      "name": "HTTP Request2",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "path": "ver-pacientes",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        3408
+      ],
+      "id": "10ae729e-9cf2-4f2f-8051-9ddfba455df2",
+      "name": "Traer Paciente",
+      "webhookId": "09ff0854-12c0-4748-b197-024c7aa712df"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "crear-paciente",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        4048
+      ],
+      "id": "d5af696e-538f-43d8-8ec7-7949a6e6dedb",
+      "name": "Crear Paciente",
+      "webhookId": "b665d78a-b208-45f4-af88-2cfb745a5b79"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1872,
+        3296
+      ],
+      "id": "9225acd8-7582-44ac-974a-0a7ee69f56b2",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"ok\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1888,
+        3888
+      ],
+      "id": "2e655085-ac70-4cfa-8c5c-f7f47e4a23e8",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"ok\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1648,
+        4560
+      ],
+      "id": "bd72c1ae-aee0-4da9-b7aa-d02f2e482fab",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"warning\",\n  \"message\":\"se redicciono la pagina, revisar url\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2368,
+        3312
+      ],
+      "id": "8dacbc4d-78cc-4b32-968b-e24f1c550735",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "content": "GET (Traer informacion)\nPOST (Crear un recurso)\nPUT (Actualizar un recurso)\nDELETE (Eliminar un recurso)",
+        "height": 112
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        896,
+        3184
+      ],
+      "typeVersion": 1,
+      "id": "c9c289be-9854-4faa-9736-5f08f8d15e46",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"error\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1648,
+        4768
+      ],
+      "id": "a9729d56-3070-4983-b45c-0358571769bf",
+      "name": "Respond to Webhook5"
+    },
+    {
+      "parameters": {
+        "httpMethod": "DELETE",
+        "path": "borrar-paciente/:id",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1056,
+        4704
+      ],
+      "id": "b32f5ba3-aac1-408f-a6a4-13693409fdf8",
+      "name": "Webhook",
+      "webhookId": "796e99a1-03d5-4482-bbf0-b5c3ae94d8a7"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xLoKm0oa9wwvCCw89VLJOinQ6KfiZe1fsLGm6InD5MQ",
+          "mode": "list",
+          "cachedResultName": "errores-hospital-lunes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xLoKm0oa9wwvCCw89VLJOinQ6KfiZe1fsLGm6InD5MQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xLoKm0oa9wwvCCw89VLJOinQ6KfiZe1fsLGm6InD5MQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "codigo": "={{ $json.error.status }}",
+            "Nivel": "={{ \n  $json.error.status >= 500 \n    ? 'critical' \n    : ($json.error.status >= 300 ? 'warning' : 'info') \n}}",
+            "webhook": "={{ $('Traer Paciente').params.path }}",
+            "fecha y hora": "={{$now}}",
+            "error": "={{ $json.error.stack }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nivel",
+              "displayName": "Nivel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "webhook",
+              "displayName": "webhook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha y hora",
+              "displayName": "fecha y hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1696,
+        3520
+      ],
+      "id": "791bb68b-a1d9-4aba-8754-02d6823e9684",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "G57EqnodtFMgBxHn",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.codigo }}",
+                    "rightValue": 400,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    },
+                    "id": "379d1449-4c9a-4bc5-ae10-68b3088f3006"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "re-direcccionamiento"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "397d10d0-a5ca-4f9e-8a88-1ccf82bbd677",
+                    "leftValue": "={{ $json.codigo }}",
+                    "rightValue": 500,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "consulta-incorrecta"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6e0a6205-18bb-4500-9935-4e22239f3d48",
+                    "leftValue": "={{ $json.codigo }}",
+                    "rightValue": 600,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "error-servidor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1952,
+        3504
+      ],
+      "id": "cac759cf-07ba-45a5-baf6-6ca70f782e85",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": \"error\",\n  \"message\":\"eror en la url\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2368,
+        3472
+      ],
+      "id": "10f21f56-e4bf-4265-a701-76721e4a05de",
+      "name": "Respond to Webhook6"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"critical\",\n  \"message\":\"error en el servidor\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2368,
+        3648
+      ],
+      "id": "d601a895-648e-4f3d-9231-4341e900ece9",
+      "name": "Respond to Webhook7"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"warning\",\n  \"message\":\"se redicciono la pagina, revisar url\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2496,
+        4000
+      ],
+      "id": "0eaefc4c-43fc-4d0d-9e2f-0f29e9ecafb0",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xLoKm0oa9wwvCCw89VLJOinQ6KfiZe1fsLGm6InD5MQ",
+          "mode": "list",
+          "cachedResultName": "errores-hospital-lunes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xLoKm0oa9wwvCCw89VLJOinQ6KfiZe1fsLGm6InD5MQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xLoKm0oa9wwvCCw89VLJOinQ6KfiZe1fsLGm6InD5MQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "codigo": "={{ $json.error.status }}",
+            "Nivel": "={{ \n  $json.error.status >= 500 \n    ? 'critical' \n    : ($json.error.status >= 300 ? 'warning' : 'info') \n}}",
+            "webhook": "={{ $('Crear Paciente').params.path }}",
+            "fecha y hora": "={{$now}}",
+            "error": "={{ $json.error.stack }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nivel",
+              "displayName": "Nivel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "webhook",
+              "displayName": "webhook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha y hora",
+              "displayName": "fecha y hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1888,
+        4192
+      ],
+      "id": "62d4654b-555d-44fb-99b0-56b480770af0",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "G57EqnodtFMgBxHn",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.codigo }}",
+                    "rightValue": 400,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    },
+                    "id": "379d1449-4c9a-4bc5-ae10-68b3088f3006"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "re-direcccionamiento"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "397d10d0-a5ca-4f9e-8a88-1ccf82bbd677",
+                    "leftValue": "={{ $json.codigo }}",
+                    "rightValue": 500,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "consulta-incorrecta"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6e0a6205-18bb-4500-9935-4e22239f3d48",
+                    "leftValue": "={{ $json.codigo }}",
+                    "rightValue": 600,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "error-servidor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2192,
+        4160
+      ],
+      "id": "31d24a4a-a931-4bfb-899d-2fb3f0794ff9",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"error\",\n  \"message\":\"revisar url y body\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2560,
+        4192
+      ],
+      "id": "3d423acf-6789-4089-a627-712072beb821",
+      "name": "Respond to Webhook8"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"error\",\n  \"message\":\"revisar la url\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2512,
+        4400
+      ],
+      "id": "7f357b75-23b6-4ab9-a3d5-8c91f4a2ea20",
+      "name": "Respond to Webhook9"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Traer Paciente": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Paciente": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "fb0a9985-a337-44fb-b8c4-0ae627014b3f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1a9b02fa3633aab9840a886f39057040de095b9f61e9688619e96e949ba177dd"
+  },
+  "id": "Fyyary1XWWf33I9Y",
+  "tags": []
+}

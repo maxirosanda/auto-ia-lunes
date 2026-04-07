@@ -1,0 +1,764 @@
+{
+  "name": "RAG LUNES",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1REt5VNmzSUpLO_ONEgrXpe-u46AESZFY",
+          "mode": "id"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        0
+      ],
+      "id": "13024065-793d-4c45-8bb8-d9c0178ef7e4",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "m4kWlntSawk0aN65",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "618b6169-f004-49d4-86bf-c535a78feea9",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "m4kWlntSawk0aN65",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"userName\": \"{{ $json.lastModifyingUser.displayName }}\",\n  \"userEmail\": \"{{ $json.lastModifyingUser.emailAddress }}\",\n\"fileName\":\"{{ $json.name }}\",\n\"fileType\":\"{{ $json.mimeType }}\",\n\"fileId\":\"{{ $json.id }}\"\n}\n",
+        "includeOtherFields": true,
+        "include": "except",
+        "excludeFields": "parents,\nlastModifyingUser,\nowners,\npermissions,\nspaces,\ncapabilities,\npermissionIds,\nlinkShareMetadata,\ndownloadRestrictions,\nkind,\nid,\nname,\nmimeType,\nstarred,\ntrashed,\nexplicitlyTrashed,\nversion,\nwebContentLink,\nwebViewLink,\niconLink,\nhasThumbnail,\nthumbnailLink,\nthumbnailVersion,\nviewedByMe,\nviewedByMeTime,\ncreatedTime,\nmodifiedTime,\nmodifiedByMeTime,\nmodifiedByMe,\nshared,\nownedByMe,\nviewersCanCopyContent,\ncopyRequiresWriterPermission,\nwritersCanShare,\noriginalFilename,\nfullFileExtension,\nfileExtension,\nmd5Checksum,\nsha1Checksum,\nsha256Checksum,\nsize,\nquotaBytesUsed,\nheadRevisionId,\nisAppAuthorized,\ninheritedPermissionsDisabled",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "6b66cfd5-ac19-44f5-8c67-4df2918cbd21",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c3ba0480-15af-4486-a0d7-1f1b8c00f18e",
+              "leftValue": "={{$json.fileType}}",
+              "rightValue": "spreadsheet",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        176,
+        0
+      ],
+      "id": "ad8edc60-3208-434a-8b9f-d7d2896ba990",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 352,
+        "width": 1008
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -560,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "f360a54c-7ad3-4288-a631-a81dd5fd3837",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloud.llamaindex.ai/api/parsing/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "result_type",
+              "value": "markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        800,
+        272
+      ],
+      "id": "483170a0-9a33-4195-997f-e9efffbca6ef",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "1uPvMRJ0ZKujE2jB",
+          "name": "Llama cloud"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        272
+      ],
+      "id": "58646d42-29d1-44cb-a0ba-6cb28600777d",
+      "name": "Wait",
+      "webhookId": "5162723f-3584-41b4-89e5-ea3453e3187d"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/parsing/job/{{ $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1248,
+        272
+      ],
+      "id": "6f60f231-11ee-4ba1-b9d7-b395c7649e4b",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "1uPvMRJ0ZKujE2jB",
+          "name": "Llama cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d331f69f-fd48-46ab-979c-4e9e90a3b90c",
+              "leftValue": "={{$json.status}}",
+              "rightValue": "SUCCESS",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1456,
+        272
+      ],
+      "id": "8692f9af-a101-4fca-9c7e-20c89a8bbe88",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/parsing/job/{{$json.id}}/result/markdown",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "{\n  \"result_type\":\"markdown\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1696,
+        256
+      ],
+      "id": "4adbfd84-7dba-42e6-9881-3db42f41d5c6",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "1uPvMRJ0ZKujE2jB",
+          "name": "Llama cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a system that prepares documents for semantic search (RAG).\n\nYour task is to transform the input text into structured, high-quality chunks with metadata.\n\nOUTPUT FORMAT (STRICT):\nReturn a JSON array of objects. Each object must have:\n\n{\n  \"text\": \"string\",\n  \"source\": \"string\",\n  \"chunk_index\": number,\n  \"chunk_id\": string\n}\n\n- content: the cleaned and structured chunk text\n- source: a short identifier of the document (infer from context if not provided, otherwise use \"unknown\")\n- chunk_index: incremental index starting from 0\n- chunk_id: must be exactly source + \"_\" + chunk_index\n\nRULES:\n\n1. Each chunk must contain COMPLETE information.\n   - Minimum 3 sentences per chunk.\n   - Maximum ~150 words.\n\n2. DO NOT create small or meaningless chunks.\n   - Avoid titles alone.\n   - Avoid slogans, headers, or isolated phrases.\n\n3. NEVER create a chunk that is only a title, heading, label, or course name.\n   - If the text does not contain explanatory or actionable information, DISCARD it.\n\n4. Group related content into the same chunk.\n   - Merge paragraphs that belong to the same topic.\n\n5. Remove noise:\n   - Ignore branding, slogans, repeated headers, or irrelevant text.\n\n6. Preserve meaning:\n   - Do not lose important information.\n   - Keep explanations complete.\n\n7. Prefer fewer high-quality chunks over many small ones.\n\n8. Do NOT split sentences.\n   - Each chunk must start and end at natural sentence boundaries.\n\n9. Ignore:\n   - legal disclaimers\n   - institutional policies\n   - generic company descriptions\n\n10. Only include information that helps answer real user questions.\n\n11. Useful information includes:\n   - skills learned\n   - technologies used\n   - how something works\n   - steps, processes, or explanations\n   - outcomes, results, or capabilities\n\n12. Exclude vague or generic content such as:\n   - \"this course is constantly updated\"\n   - \"high quality experience\"\n   - \"designed for the modern world\"\n   - any generic marketing language\n\n13. Each chunk must be information-dense.\n   - Avoid chunks that are too general, repetitive, or low in informational value.\n\n14. Prioritize technical, educational, or explanatory content over descriptive or promotional text.\n\n15. If a chunk contains multiple distinct topics, split them into separate chunks.\n\n16. Avoid duplicate chunks:\n   - If multiple parts of the text repeat the same idea or phrase, include it only once.\n   - Do NOT generate semantically redundant chunks.\n\n17. Each chunk must provide UNIQUE value.\n   - If removing the chunk does not reduce the overall understanding, DISCARD it.\n\n18. Discard low-value text:\n   - Standalone titles\n   - Section names\n   - Navigation elements\n   - Repeated course names\n   - Any content shorter than 2 full sentences\n\n19. Metadata rules:\n   - chunk_index must increment sequentially (0, 1, 2, ...)\n   - source must be consistent across all chunks from the same input\n   - If a clear title, filename, or context exists, use it as source\n   - If not, use \"unknown\"\n   - chunk_id must follow: source + \"_\" + chunk_index\n\n20. Quality over quantity:\n   - It is better to return fewer chunks than to include low-quality ones.\n\n21. DO NOT include explanations outside the JSON.\n\nIMPORTANT:\n- Return ONLY valid JSON\n- Escape all quotes inside strings using \\\"\n- Do not include markdown (no ```json)\n\nReturn ONLY the JSON array.\n\nTEXT: {{ $json.markdown || $json.content }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1904,
+        256
+      ],
+      "id": "1e6fddeb-575d-4b36-a9ab-a143f72557eb",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tPOlAXxdOkL7CcXN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtener el texto correcto\nconst raw = $json.content.parts[0].text;\n\n// 2. Limpiar ```json\nconst cleaned = raw\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\n// 3. Parsear JSON\nconst parsed = JSON.parse(cleaned);\n\n// 4. Mapear al formato que querés\nconst result = parsed.map(item => ({\n  text: item.text || \"\",\n  summary: item.summary || \"\",\n  keywords: item.keywords || [],\n  source: item.source || \"\",\n  chunk_index: item.chunk_index ?? 0,\n  chunk_id: item.chunk_id || \"\"\n}));\n\n// 5. Output n8n\nreturn result.map(r => ({ json: r }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        256
+      ],
+      "id": "6da2291a-db82-4f97-9fa9-451aa1df4900",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 336,
+        "width": 1920,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        672,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "084158e6-382f-4f32-91bc-a9d593a5ab23",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 400,
+        "width": 582
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2768,
+        64
+      ],
+      "typeVersion": 1,
+      "id": "6810cedc-4e0f-4d75-b809-491921301c73",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        2976,
+        96
+      ],
+      "id": "fbd37a91-d4db-49cd-9c34-eece893282d9",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyhT1cV4sIpQn4aF",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2928,
+        288
+      ],
+      "id": "a7eb64af-84e5-4c14-a9e7-e480f7a341fc",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tPOlAXxdOkL7CcXN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{$json.text}}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "sumary",
+                "value": "={{ $json.summary}}"
+              },
+              {
+                "name": "Keywords",
+                "value": "={{$json.keywords}}"
+              },
+              {
+                "name": "sourse",
+                "value": "={{$json.source}}"
+              },
+              {
+                "name": "=chunk_index",
+                "value": "={{$json.chunk_index}}"
+              },
+              {
+                "name": "=chunk_id",
+                "value": "={{$json.chunk_id}}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        3136,
+        304
+      ],
+      "id": "581bec94-fcdd-4504-a4db-2960e3f97b63",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 560,
+        "width": 848,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -560,
+        -832
+      ],
+      "typeVersion": 1,
+      "id": "67280807-0e31-401e-9edd-150b7fdc3cba",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -496,
+        -768
+      ],
+      "id": "03ea0baf-31d8-4bea-be62-ac4323603ca8",
+      "name": "When chat message received",
+      "webhookId": "7ee3a6d3-cbfd-4679-8782-7541479795c0"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "🧠 System Prompt\n\nSos un asistente virtual de una escuela de programación y automatizaciones.\n\nTu tarea es responder preguntas de potenciales clientes utilizando exclusivamente la información recuperada desde una base de datos vectorial.\n\n🎯 OBJETIVO\n\nResponder de forma:\n\nClara\nBreve\nPrecisa\nSin agregar información innecesaria\n📌 REGLAS IMPORTANTES\nRespondé únicamente en base a la información proporcionada.\nNo inventes información ni completes con suposiciones.\nNo agregues contexto extra si el usuario no lo pidió.\nSi la información no está disponible, decí:\n👉 \"No tengo esa información en este momento.\"\nUsá frases cortas y directas.\nEvitá explicaciones largas, introducciones o cierres innecesarios.\nNo repitas la pregunta del usuario.\nRespondé como si fuera una conversación por WhatsApp.\n🧾 ESTILO DE RESPUESTA\nMáximo 2–4 líneas.\nLenguaje natural y cercano.\nSin emojis (a menos que se indique lo contrario).\nSin formato complejo.\n📚 CONTEXTO\n\nVas a recibir información relevante desde una base de datos vectorial (RAG).\nUsá solo ese contenido para responder.\n\n✅ EJEMPLOS\n\nUsuario: ¿Cuánto dura el curso?\nRespuesta: 2 meses, con 4 clases por semana.\n\nUsuario: ¿Dan certificado?\nRespuesta: Sí, al finalizar el curso.\n\nUsuario: ¿Enseñan Python?\nRespuesta: No tengo esa información en este momento."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -288,
+        -768
+      ],
+      "id": "9fefcac2-1ac3-4f47-bc5d-bcee50060c93",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -512
+      ],
+      "id": "2a97bfe0-a16c-42f7-a44f-f074ed24c573",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tPOlAXxdOkL7CcXN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        -496
+      ],
+      "id": "e44bad16-fa3b-4281-b203-0c136a54c54a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Utilice esta herramienta para obtener información relevante sobre los cursos de programación, incluyendo el plan de estudios, los módulos, los precios, los horarios y el público objetivo.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        -576
+      ],
+      "id": "b892f43a-8d53-4a7e-b704-02c3336fdbc3",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyhT1cV4sIpQn4aF",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -416
+      ],
+      "id": "09b538d8-fb44-4af2-a0df-2b9d7aa724d2",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tPOlAXxdOkL7CcXN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ed025deb-db28-45e9-aca7-9ea03ecfef02",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "98611db8140f0447c39c8e56666f9a86ee6ca617237fbb551230c599687176fd"
+  },
+  "id": "Kc6sxzPBOfbRSdJc",
+  "tags": []
+}
