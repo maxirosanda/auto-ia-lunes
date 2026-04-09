@@ -1,0 +1,426 @@
+{
+  "name": "Chat con texto y audio",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "13f1e83a-33c8-493f-b125-97eea3283cf2",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -960,
+        -64
+      ],
+      "id": "04965ed3-c011-4df0-a7b5-82550c0ae9c2",
+      "name": "Webhook",
+      "webhookId": "13f1e83a-33c8-493f-b125-97eea3283cf2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5edc883f-9a05-4943-bbe7-7563ae303e46",
+              "leftValue": "={{$binary.data}}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -752,
+        -64
+      ],
+      "id": "a201a580-5e32-4b7a-9c15-60cc4a6bcbd7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.text }}",
+        "options": {
+          "systemMessage": "=Sos un asistente virtual de una empresa especializada en automatización con inteligencia artificial.\n\nTu tarea es responder mensajes de clientes de forma clara, útil y profesional.\n\nReglas IMPORTANTES:\n- Respondé de forma clara y directa.\n- Usá un tono profesional pero cercano.\n- Mantené respuestas breves (3 a 5 oraciones como máximo).\n- Evitá tecnicismos innecesarios, salvo que el cliente los use.\n- No repitas lo que dijo el cliente.\n- No uses respuestas genéricas.\n- No inventes información.\n\nObjetivo:\nEntender la necesidad del cliente y ayudarlo, guiándolo hacia una solución o el siguiente paso (ej: pedir más detalles, ofrecer ayuda, agendar una llamada).\n\nComportamiento:\n- Si el mensaje es una consulta → respondé con claridad.\n- Si el mensaje es ambiguo → pedí aclaración con una sola pregunta.\n- Si el cliente muestra interés → orientá la conversación hacia una acción (ej: avanzar con su caso).\n- Si el cliente no conoce el tema → explicá simple, sin ser técnico.\n\nContexto de la empresa:\nLa empresa crea soluciones de automatización con IA (chatbots, integraciones, flujos automáticos, etc.) para optimizar procesos y ahorrar tiempo.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        48,
+        336
+      ],
+      "id": "efa94082-4045-4e1a-8b2b-8533b03e23b6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        48,
+        528
+      ],
+      "id": "9877d4ff-9cff-48c5-b8be-eed202e3e7a6",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tPOlAXxdOkL7CcXN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.tel }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        688
+      ],
+      "id": "c8cca66a-554e-4928-8176-1fb81f758d15",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        416,
+        336
+      ],
+      "id": "b6cb19de-f502-41a8-a6c9-55373ef32968",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 432,
+        "width": 736
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -112,
+        256
+      ],
+      "typeVersion": 1,
+      "id": "fd6adfa6-56ef-4122-bb0c-085a6dd57922",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 320,
+        "width": 448,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1024,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "f029f056-3834-4cbe-a34b-340ada21a6c5",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -32,
+        -416
+      ],
+      "id": "6109c213-41ef-4a52-8b6b-bea35027049f",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Transcribí este audio en español. Devolvé solo el texto.\"\n        },\n        {\n          \"inline_data\": {\n            \"mime_type\": \"audio/ogg\",\n            \"data\": \"{{ $json.data }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        176,
+        -416
+      ],
+      "id": "e64a0d06-85d7-40cf-b3c5-b8bae1bb4d9f",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hULuAEpbAZTCnWe6",
+          "name": "Header Auth Gemini"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.candidates[0].content.parts[0].text }}",
+        "options": {
+          "systemMessage": "=Sos un asistente virtual de una empresa especializada en automatización con inteligencia artificial.\n\nTu tarea es responder mensajes de clientes que fueron transcritos desde audios.\n\nReglas IMPORTANTES:\n- Respondé de forma clara, breve y directa.\n- Usá un tono profesional pero cercano.\n- Máximo 2 o 3 oraciones.\n- Evitá explicaciones largas o técnicas innecesarias.\n- No repitas lo que dijo el cliente.\n- No uses listas ni formato complejo.\n- No agregues relleno ni frases genéricas.\n- Respondé como si fuera un mensaje hablado (natural para audio).\n\nObjetivo:\nAyudar al cliente, resolver su duda o guiarlo al siguiente paso (por ejemplo: pedir más info, agendar una llamada, etc.).\n\nSi falta información:\n- Pedí SOLO lo mínimo necesario en una sola pregunta.\n\nContexto de la empresa:\nLa empresa crea soluciones de automatización con IA (chatbots, integraciones, flujos automáticos, etc.) para mejorar procesos y ahorrar tiempo.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        384,
+        -416
+      ],
+      "id": "0af986c8-a661-49b2-a386-474e9f68fca1",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        384,
+        -224
+      ],
+      "id": "f1f56f9e-bc5d-49b8-854f-0389f6b28100",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tPOlAXxdOkL7CcXN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 464,
+        "width": 1280,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -128,
+        -512
+      ],
+      "typeVersion": 1,
+      "id": "dff9bc74-738a-4bff-8be7-3646da314b1c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/Ejn6IMiIDA0kNBW4lWR7",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \"{{$json.output}}\",\n  \"model_id\": \"eleven_multilingual_v2\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        720,
+        -416
+      ],
+      "id": "e89e8a0a-bd97-4258-af61-387ba5b5df11",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "sazO2ditJqw6rpHd",
+          "name": "Header Auth Elevenlab"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "responseDataSource": "set",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        912,
+        -416
+      ],
+      "id": "3f83174e-84f9-4685-848e-7c132f8440ab",
+      "name": "Respond to Webhook1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d5a52da0-84c9-4cb4-9da7-e8a725c7a572",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "98611db8140f0447c39c8e56666f9a86ee6ca617237fbb551230c599687176fd"
+  },
+  "id": "obCVVm6bK3pXZ9eP",
+  "tags": []
+}

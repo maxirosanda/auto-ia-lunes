@@ -22,7 +22,7 @@
       "type": "n8n-nodes-base.googleDriveTrigger",
       "typeVersion": 1,
       "position": [
-        -448,
+        -512,
         0
       ],
       "id": "13024065-793d-4c45-8bb8-d9c0178ef7e4",
@@ -42,7 +42,15 @@
           "value": "={{ $json.id }}",
           "mode": "id"
         },
-        "options": {}
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              "slidesToFormat": "application/pdf",
+              "sheetsToFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
+          }
+        }
       },
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
@@ -538,6 +546,48 @@
           "name": "Google Gemini(PaLM) Api account"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        1344,
+        -144
+      ],
+      "id": "85c7fe67-8890-44fb-9ca0-3e7e60f01928",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 272,
+        "width": 688
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1168,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "5b68b963-bf6a-4278-9afa-18c458f0a699",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// Caso 1: múltiples items (lo más común en n8n)\nif (items.length > 1) {\n  return items.map((item, index) => {\n    const d = item.json;\n\n    return {\n      json: {\n        text: `ID: ${d.ID}, Nombre: ${d.Nombre}, Edad: ${d.Edad}, Pais: ${d.Pais}, IngresoMensual: ${d.IngresoMensual}`,\n        source: \"ejemplo_datos\",\n        chunk_index: index,\n        chunk_id: `ejemplo_datos_${index}`\n      }\n    };\n  });\n}\n\n// Caso 2: un solo item con array adentro\nlet data = items[0].json;\n\n// si viene como { data: [...] }\nif (Array.isArray(data.data)) {\n  data = data.data;\n}\n\n// si viene como array directo\nelse if (Array.isArray(data)) {\n  // ok\n}\n\n// si viene como objeto único\nelse {\n  data = [data];\n}\n\nreturn data.map((item, index) => {\n  return {\n    json: {\n      text: `ID: ${item.ID}, Nombre: ${item.Nombre}, Edad: ${item.Edad}, Pais: ${item.Pais}, IngresoMensual: ${item.IngresoMensual}`,\n      source: \"ejemplo_datos\",\n      chunk_index: index,\n      chunk_id: `ejemplo_datos_${index}`\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        -144
+      ],
+      "id": "c3990b47-586d-4677-9549-9c5d44b73064",
+      "name": "Code in JavaScript1"
     }
   ],
   "pinData": {},
@@ -577,7 +627,13 @@
     },
     "If": {
       "main": [
-        [],
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "HTTP Request",
@@ -747,6 +803,28 @@
           }
         ]
       ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -754,7 +832,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "ed025deb-db28-45e9-aca7-9ea03ecfef02",
+  "versionId": "9efa558a-3c59-4243-978b-d10e8c2eacb4",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "98611db8140f0447c39c8e56666f9a86ee6ca617237fbb551230c599687176fd"
