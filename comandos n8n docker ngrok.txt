@@ -1,0 +1,15 @@
+https://ngrok.com/download/windows?tab=download
+
+ngrok config add-authtoken TU_TOKEN
+
+ngrok http 5678
+
+docker run --rm -it --name n8n -p 5678:5678 -e WEBHOOK_URL=TU_URL -e N8N_TRUST_PROXY=true -v n8n_data:/home/node/.n8n n8nio/n8n
+
+------------------------------------------------------------------------------------------
+
+ngrok http 5678
+
+docker run  -it --name n8n -p 5678:5678 -e WEBHOOK_URL=TU_URL -e N8N_TRUST_PROXY=true -v n8n_data:/home/node/.n8n n8nio/n8n
+
+docker run -it --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n -e API_KEY=123456 n8nio/n8n 
