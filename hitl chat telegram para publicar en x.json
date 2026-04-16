@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        -480,
-        -80
+        -3008,
+        16
       ],
-      "id": "9c43593c-c727-4447-85bf-1924e492ee41",
+      "id": "e32252e4-dc34-44ff-93b8-8ced76f37c2d",
       "name": "Telegram Trigger",
       "webhookId": "5aeb44df-b208-4086-83c2-df7adecc06c0",
       "credentials": {
@@ -35,10 +35,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        -224,
-        -80
+        -2768,
+        16
       ],
-      "id": "457f6e75-ae62-49a0-a555-5c3bb9c312de",
+      "id": "bf41abe4-3e50-4bfd-9a4e-7050c99d1758",
       "name": "AI Agent"
     },
     {
@@ -48,43 +48,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -224,
-        96
+        -2768,
+        208
       ],
-      "id": "607ef583-5d25-447e-bb64-d3bb731f6f14",
+      "id": "3552f4fc-389f-49c7-a95e-ace8d8f2cc07",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
           "id": "tPOlAXxdOkL7CcXN",
           "name": "Google Gemini(PaLM) Api account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "sendAndWait",
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "message": "=este es el posteo para x esta bien ??\n{{$json.post}}",
-        "approvalOptions": {
-          "values": {
-            "approvalType": "double"
-          }
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        336,
-        -80
-      ],
-      "id": "fc2f643a-bc35-4c36-ac76-66e7225de3a1",
-      "name": "Send a text message",
-      "webhookId": "b6abda52-c406-4b1f-85df-58282207677d",
-      "credentials": {
-        "telegramApi": {
-          "id": "AwaLw0egIbuWFv1A",
-          "name": "Telegram account"
         }
       }
     },
@@ -116,10 +88,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        560,
-        -80
+        -1776,
+        32
       ],
-      "id": "cd85f204-f654-4a7b-9db5-8a573f55ca13",
+      "id": "bc51cf4f-32a6-4c15-8300-49c24e5b7ca1",
       "name": "If"
     },
     {
@@ -128,15 +100,21 @@
         "chatId": "={{$('Telegram Trigger').item.json.message.chat.id}}",
         "message": "que cambios queres hacer al posteo??",
         "responseType": "freeText",
-        "options": {}
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "resumeUnit": "minutes"
+            }
+          }
+        }
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        848,
-        -16
+        -1584,
+        144
       ],
-      "id": "549e3f90-5429-47a3-b36d-6e65d607c944",
+      "id": "bcf2b4bd-9988-47d9-afb6-a36f1c0818bb",
       "name": "Send a text message1",
       "webhookId": "6789882c-4f0f-4cf0-afb2-c3f085158424",
       "credentials": {
@@ -157,10 +135,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        1088,
-        144
+        -1072,
+        256
       ],
-      "id": "a911bd43-63f2-4792-9f6a-5a04fd22aa91",
+      "id": "61e70ad9-535c-45fb-a91e-969f6e1833e2",
       "name": "AI Agent1"
     },
     {
@@ -170,10 +148,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        960,
-        464
+        -1072,
+        560
       ],
-      "id": "0d7f3883-7aa8-4a64-b820-ca585d81da6f",
+      "id": "85fecde5-834c-4779-a7d6-10fe4dc7928e",
       "name": "Google Gemini Chat Model1",
       "credentials": {
         "googlePalmApi": {
@@ -191,10 +169,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        128,
-        -80
+        -2464,
+        16
       ],
-      "id": "e52a44dd-f9c4-4ca2-aa11-fb4693ea90b5",
+      "id": "94b636f5-b923-4305-8a1d-0ab4a9075907",
       "name": "Edit Fields"
     },
     {
@@ -226,10 +204,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        960,
-        -272
+        -1312,
+        -48
       ],
-      "id": "51f377eb-d29d-4225-8279-23f5597794e8",
+      "id": "e0aece4c-ed9c-494f-a1e2-cce901775c5a",
       "name": "HTTP Request",
       "credentials": {
         "httpHeaderAuth": {
@@ -237,6 +215,320 @@
           "name": "Header Auth Upload Post"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5f658a53-2c7c-4365-8066-ac12fb12924b",
+              "leftValue": "={{$json.post}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "={{ false }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2080,
+        16
+      ],
+      "id": "12113015-3146-4f40-a634-d87d8827bdab",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "message": "=este es el posteo para x esta bien ??\n{{$json.post}}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "resumeUnit": "minutes"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2272,
+        16
+      ],
+      "id": "e7133f87-1bb2-4aca-be48-6a9a579232f3",
+      "name": "Send a text message",
+      "webhookId": "b6abda52-c406-4b1f-85df-58282207677d",
+      "credentials": {
+        "telegramApi": {
+          "id": "AwaLw0egIbuWFv1A",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "maxi_rosanda@hotmail.com",
+        "subject": "Pendiente de aprobacion",
+        "message": "=este es el posteo para x esta bien ?? {{$json.post}}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -96,
+        -800
+      ],
+      "id": "52a788ae-dd99-44c4-be5f-d5c2bb94603d",
+      "name": "Send a message",
+      "webhookId": "52b8e0fd-c7ce-47f2-aaf7-ed274ae53eeb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "lhcTYm6l3G6slECR",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "714ff8f2-39c7-4079-85af-6f46cb058afa",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        96,
+        -800
+      ],
+      "id": "8d75a5b1-393d-4e9c-ba09-0816287d5662",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=post: {{ $('AI Agent').item.json.output }}\ncorreccion: {{ $json.data.text }}",
+        "options": {
+          "systemMessage": "Sos un experto en redacción para redes sociales, especialmente X (Twitter).\n\nTu tarea es tomar:\n1. Un post original\n2. Una corrección o sugerencia\n\nY generar un nuevo post mejorado.\n\nReglas:\n- Aplicá SIEMPRE la corrección recibida\n- Mantené la idea principal del post original\n- Mejorá claridad, impacto y naturalidad\n- Hacelo más atractivo y fácil de leer\n- Máximo 280 caracteres\n- Evitá redundancias\n- Usá un tono directo, moderno y profesional\n- Si corresponde, agregá estructura (saltos de línea o bullets cortos)\n- NO expliques nada, solo devolvé el nuevo post\n- NO menciones la corrección ni el proceso\n\nSi la corrección implica un cambio conceptual fuerte, priorizá la corrección sobre el texto original."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        544,
+        -624
+      ],
+      "id": "2e511f34-cbe8-4f9c-88b9-f7150cc7bdd8",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -368
+      ],
+      "id": "36b8e8c8-f5db-43e3-b3d6-e221fefff0f9",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tPOlAXxdOkL7CcXN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.upload-post.com/api/upload_text",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "user",
+              "value": "AutomatizacionesInteligentes"
+            },
+            {
+              "name": "title",
+              "value": "={{ $('Edit Fields').item.json.post }}"
+            },
+            {
+              "name": "platform[]",
+              "value": "x"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        -944
+      ],
+      "id": "fdb58d08-d723-468f-8694-dececc6d3fdc",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YNYIxLjA1QEbfVsG",
+          "name": "Header Auth Upload Post"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 832,
+        "width": 1344,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -256,
+        -1008
+      ],
+      "typeVersion": 1,
+      "id": "3d221805-c93a-43bf-aa76-f62039a71517",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "maxi_rosanda@hotmail.com",
+        "subject": "que queres cambiar del post?",
+        "message": "que queres cambiar del post?",
+        "responseType": "freeText",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        -624
+      ],
+      "id": "3c065f40-127d-452e-8431-ed88e7a31214",
+      "name": "Send a message1",
+      "webhookId": "43664f4c-c694-4a5f-a026-8a85c8323ee2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "lhcTYm6l3G6slECR",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"post\": \"{{$json.output}}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        -624
+      ],
+      "id": "ac724d26-3040-4c9a-b6aa-f36df6cd942a",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6615bf66-2da3-4dfb-94b4-f10a11912e70",
+              "leftValue": "={{ $json.data.text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1360,
+        144
+      ],
+      "id": "91c27765-8b17-4a22-9e7a-b67501103165",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 1152,
+        "width": 2656
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3232,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "418c552f-f152-4966-878c-a1c70188e361",
+      "name": "Sticky Note1"
     }
   ],
   "pinData": {},
@@ -274,17 +566,6 @@
         ]
       ]
     },
-    "Send a text message": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If": {
       "main": [
         [
@@ -307,7 +588,7 @@
       "main": [
         [
           {
-            "node": "AI Agent1",
+            "node": "If3",
             "type": "main",
             "index": 0
           }
@@ -346,18 +627,138 @@
           }
         ]
       ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "d6c511e0-0b8a-479f-b33c-08b03ba1887e",
+  "versionId": "de9ecc55-9e95-4877-a3c3-610b8c846551",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "98611db8140f0447c39c8e56666f9a86ee6ca617237fbb551230c599687176fd"
   },
-  "id": "8NFa5f28EynKAd0w",
+  "id": "zdr4kLwCuUf3WEEj",
   "tags": []
 }

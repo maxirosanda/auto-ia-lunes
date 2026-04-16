@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -960,
-        -64
+        -1072,
+        432
       ],
-      "id": "04965ed3-c011-4df0-a7b5-82550c0ae9c2",
+      "id": "8cd8c9e4-8684-4feb-989d-951e0849a2a6",
       "name": "Webhook",
       "webhookId": "13f1e83a-33c8-493f-b125-97eea3283cf2"
     },
@@ -30,12 +30,11 @@
           "conditions": [
             {
               "id": "5edc883f-9a05-4943-bbe7-7563ae303e46",
-              "leftValue": "={{$binary.data}}",
-              "rightValue": "",
+              "leftValue": "={{ $json.body.messages[0].type }}",
+              "rightValue": "text",
               "operator": {
-                "type": "object",
-                "operation": "notEmpty",
-                "singleValue": true
+                "type": "string",
+                "operation": "equals"
               }
             }
           ],
@@ -46,16 +45,16 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -752,
-        -64
+        -560,
+        448
       ],
-      "id": "a201a580-5e32-4b7a-9c15-60cc4a6bcbd7",
+      "id": "0ff9a794-0fd1-4f25-94f1-d6107a768b27",
       "name": "If"
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ $json.body.text }}",
+        "text": "={{ $json.body.messages[0].text.body }}",
         "options": {
           "systemMessage": "=Sos un asistente virtual de una empresa especializada en automatización con inteligencia artificial.\n\nTu tarea es responder mensajes de clientes de forma clara, útil y profesional.\n\nReglas IMPORTANTES:\n- Respondé de forma clara y directa.\n- Usá un tono profesional pero cercano.\n- Mantené respuestas breves (3 a 5 oraciones como máximo).\n- Evitá tecnicismos innecesarios, salvo que el cliente los use.\n- No repitas lo que dijo el cliente.\n- No uses respuestas genéricas.\n- No inventes información.\n\nObjetivo:\nEntender la necesidad del cliente y ayudarlo, guiándolo hacia una solución o el siguiente paso (ej: pedir más detalles, ofrecer ayuda, agendar una llamada).\n\nComportamiento:\n- Si el mensaje es una consulta → respondé con claridad.\n- Si el mensaje es ambiguo → pedí aclaración con una sola pregunta.\n- Si el cliente muestra interés → orientá la conversación hacia una acción (ej: avanzar con su caso).\n- Si el cliente no conoce el tema → explicá simple, sin ser técnico.\n\nContexto de la empresa:\nLa empresa crea soluciones de automatización con IA (chatbots, integraciones, flujos automáticos, etc.) para optimizar procesos y ahorrar tiempo.\n"
         }
@@ -63,10 +62,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        48,
-        336
+        160,
+        -16
       ],
-      "id": "efa94082-4045-4e1a-8b2b-8533b03e23b6",
+      "id": "cb74f25d-d813-4530-bf40-5fb9a658dba5",
       "name": "AI Agent"
     },
     {
@@ -76,10 +75,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        48,
-        528
+        160,
+        176
       ],
-      "id": "9877d4ff-9cff-48c5-b8be-eed202e3e7a6",
+      "id": "a6db1490-12df-4089-a41c-8b2a9ad08634",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
@@ -91,59 +90,46 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Webhook').item.json.body.tel }}"
+        "sessionKey": "={{ $('Webhook').item.json.body.messages[0].from }}"
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        896,
-        688
+        1024,
+        1200
       ],
-      "id": "c8cca66a-554e-4928-8176-1fb81f758d15",
+      "id": "9575fa7a-56de-4467-a3e3-6c0082fd057d",
       "name": "Simple Memory"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [
-        416,
-        336
-      ],
-      "id": "b6cb19de-f502-41a8-a6c9-55373ef32968",
-      "name": "Respond to Webhook"
     },
     {
       "parameters": {
         "content": "",
         "height": 432,
-        "width": 736
+        "width": 1008
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -112,
-        256
+        0,
+        -96
       ],
       "typeVersion": 1,
-      "id": "fd6adfa6-56ef-4122-bb0c-085a6dd57922",
+      "id": "4dfdd444-eaad-48b9-b7e2-8cd214f00d40",
       "name": "Sticky Note"
     },
     {
       "parameters": {
         "content": "",
         "height": 320,
-        "width": 448,
+        "width": 816,
         "color": 4
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -1024,
-        -160
+        -1168,
+        352
       ],
       "typeVersion": 1,
-      "id": "f029f056-3834-4cbe-a34b-340ada21a6c5",
+      "id": "0673442d-a78e-42cc-8238-cf63116587d1",
       "name": "Sticky Note1"
     },
     {
@@ -154,10 +140,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        -32,
-        -416
+        -144,
+        688
       ],
-      "id": "6109c213-41ef-4a52-8b6b-bea35027049f",
+      "id": "a63ec570-1749-4bb1-8b5a-0c6b5046c2c3",
       "name": "Extract from File"
     },
     {
@@ -177,10 +163,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        176,
-        -416
+        64,
+        688
       ],
-      "id": "e64a0d06-85d7-40cf-b3c5-b8bae1bb4d9f",
+      "id": "af065f4d-ae04-48df-8a6c-b2f3fe8f82f9",
       "name": "HTTP Request",
       "credentials": {
         "httpHeaderAuth": {
@@ -200,10 +186,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        384,
-        -416
+        272,
+        688
       ],
-      "id": "0af986c8-a661-49b2-a386-474e9f68fca1",
+      "id": "db69b0a1-5518-4e76-bd31-bef1ab61cbde",
       "name": "AI Agent1"
     },
     {
@@ -213,10 +199,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        384,
-        -224
+        272,
+        880
       ],
-      "id": "f1f56f9e-bc5d-49b8-854f-0389f6b28100",
+      "id": "4a1557fd-1dbc-4aba-9326-0bca5b5cc846",
       "name": "Google Gemini Chat Model1",
       "credentials": {
         "googlePalmApi": {
@@ -234,11 +220,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -128,
-        -512
+        -240,
+        592
       ],
       "typeVersion": 1,
-      "id": "dff9bc74-738a-4bff-8be7-3646da314b1c",
+      "id": "1fa7ee48-460a-4c21-a3f1-24a78475ca72",
       "name": "Sticky Note2"
     },
     {
@@ -258,10 +244,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        720,
-        -416
+        608,
+        688
       ],
-      "id": "e89e8a0a-bd97-4258-af61-387ba5b5df11",
+      "id": "14afe667-1350-4dce-905e-9c136d7f793d",
       "name": "HTTP Request1",
       "credentials": {
         "httpHeaderAuth": {
@@ -279,20 +265,153 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        912,
-        -416
+        800,
+        688
       ],
-      "id": "3f83174e-84f9-4685-848e-7c132f8440ab",
+      "id": "7e419554-f064-4c26-a314-98dd4ae4bd6c",
       "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://gate.whapi.cloud/messages/text",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"{{ $('Webhook').item.json.body.messages[0].from }}\",\n  \"body\": \"{{$json.output}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        768,
+        -16
+      ],
+      "id": "44e4beaf-9c95-41ac-982f-5c3877f8a204",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "UakBzL2fFiDf3jrK",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  return {\n    json: {\n      ...item.json,\n      output: item.json.output.replace(/\\n/g, '')\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        -16
+      ],
+      "id": "e7b01ccf-9e54-47f5-a9b0-897132e9615f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "dec1a8b5-c302-42f2-8ec4-c065f6e8bc54",
+              "leftValue": "={{$json.body.messages[0].from}}",
+              "rightValue": "5491158524108",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -800,
+        432
+      ],
+      "id": "8cc4f8c9-b3fe-4f39-9c9b-dfe3bcc42782",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "content": "# Chat con texto y audio\n\n## creamos un chat para whatsapp\n\n ### dfhdsjfkl *sdjfklsdjf* lsdfjsdf ilsaj fio\n\nkfdjs dfjsd ksdjfl **sdffjklsd** fjlkjdsflksdjflsdksjdiosdfj klfjsdifjsdiofjsdfiosdjf ~~jsfksdfjsdioj~~ ijsdffsdifjsdifo sdjifisdf sdfoijiosdjfsd iosdfjsisdifoioafjiojdf  ijodfjsfio jsd  fiojsdifoj iodfjsiofjsdf ij oifdjsoifijsdf \n\n- webhook\n- agentes ia \n    - if\n\n\n 1. transformacion de audio a texto\n2. transfroacion de texto a audio\n\n[Google](https://google.com)\n\n```js\nconsole.log(\"hola mundo\");\n```\n\n- [x] Hecho\n- [ ] Pendiente",
+        "height": 656,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1616,
+        -432
+      ],
+      "typeVersion": 1,
+      "id": "297e4035-8c71-4793-897a-d0f676588e60",
+      "name": "Sticky Note3"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "ebay-thrower-siren.ngrok-free.dev",
+            "content-length": "306",
+            "accept": "application/json",
+            "baggage": "sentry-environment=prod,sentry-public_key=22217dc31eef5d21afad60404664acb9,sentry-trace_id=3212c41a112447da87e34482b87044ff",
+            "content-type": "application/json",
+            "sentry-trace": "3212c41a112447da87e34482b87044ff-9ce464180a336bde",
+            "x-forwarded-for": "37.27.140.235",
+            "x-forwarded-host": "ebay-thrower-siren.ngrok-free.dev",
+            "x-forwarded-proto": "https",
+            "accept-encoding": "gzip"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "messages": [
+              {
+                "id": "rPhGtrLeJgQ7S2hyY8CvgQ-hYtb8gIAUMs",
+                "from_me": false,
+                "type": "text",
+                "chat_id": "5491168179706@s.whatsapp.net",
+                "timestamp": 1776300145,
+                "source": "mobile",
+                "text": {
+                  "body": "Hola"
+                },
+                "from": "5491168179706",
+                "from_name": "Maxi"
+              }
+            ],
+            "event": {
+              "type": "messages",
+              "event": "post"
+            },
+            "channel_id": "IRONMN-DZ4TG"
+          },
+          "webhookUrl": "https://ebay-thrower-siren.ngrok-free.dev/webhook/13f1e83a-33c8-493f-b125-97eea3283cf2",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
   "connections": {
     "Webhook": {
       "main": [
         [
           {
-            "node": "If",
+            "node": "If1",
             "type": "main",
             "index": 0
           }
@@ -303,14 +422,14 @@
       "main": [
         [
           {
-            "node": "Extract from File",
+            "node": "AI Agent",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "AI Agent",
+            "node": "Extract from File",
             "type": "main",
             "index": 0
           }
@@ -348,7 +467,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "Code in JavaScript",
             "type": "main",
             "index": 0
           }
@@ -409,18 +528,40 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "d5a52da0-84c9-4cb4-9da7-e8a725c7a572",
+  "versionId": "b10ca305-2ace-4763-92bc-71fa9fd7071c",
   "meta": {
-    "templateCredsSetupCompleted": true,
     "instanceId": "98611db8140f0447c39c8e56666f9a86ee6ca617237fbb551230c599687176fd"
   },
-  "id": "obCVVm6bK3pXZ9eP",
+  "id": "ddqZGmG5tUKjBzlB",
   "tags": []
 }
