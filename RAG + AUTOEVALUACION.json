@@ -1,0 +1,1486 @@
+{
+  "name": "RAG + AUTOEVALUACION",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1REt5VNmzSUpLO_ONEgrXpe-u46AESZFY",
+          "mode": "id"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        272,
+        672
+      ],
+      "id": "f2228049-ba59-492d-9ff0-3be7109ecdda",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iCwexu6NZb6Zji2u",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              "slidesToFormat": "application/pdf",
+              "sheetsToFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        496,
+        672
+      ],
+      "id": "d07ec049-ff9b-4e61-85c2-b3670671bc0b",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iCwexu6NZb6Zji2u",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"userName\": \"{{ $json.lastModifyingUser.displayName }}\",\n  \"userEmail\": \"{{ $json.lastModifyingUser.emailAddress }}\",\n\"fileName\":\"{{ $json.name }}\",\n\"fileType\":\"{{ $json.mimeType }}\",\n\"fileId\":\"{{ $json.id }}\"\n}\n",
+        "includeOtherFields": true,
+        "include": "except",
+        "excludeFields": "parents,\nlastModifyingUser,\nowners,\npermissions,\nspaces,\ncapabilities,\npermissionIds,\nlinkShareMetadata,\ndownloadRestrictions,\nkind,\nid,\nname,\nmimeType,\nstarred,\ntrashed,\nexplicitlyTrashed,\nversion,\nwebContentLink,\nwebViewLink,\niconLink,\nhasThumbnail,\nthumbnailLink,\nthumbnailVersion,\nviewedByMe,\nviewedByMeTime,\ncreatedTime,\nmodifiedTime,\nmodifiedByMeTime,\nmodifiedByMe,\nshared,\nownedByMe,\nviewersCanCopyContent,\ncopyRequiresWriterPermission,\nwritersCanShare,\noriginalFilename,\nfullFileExtension,\nfileExtension,\nmd5Checksum,\nsha1Checksum,\nsha256Checksum,\nsize,\nquotaBytesUsed,\nheadRevisionId,\nisAppAuthorized,\ninheritedPermissionsDisabled",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        752,
+        672
+      ],
+      "id": "572c10d2-c035-4302-af62-391d58b6fdc0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c3ba0480-15af-4486-a0d7-1f1b8c00f18e",
+              "leftValue": "={{$json.fileType}}",
+              "rightValue": "spreadsheet",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        960,
+        672
+      ],
+      "id": "af29f0fe-75c4-4a0d-87a5-9b97bb15f474",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 352,
+        "width": 1008,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        224,
+        544
+      ],
+      "typeVersion": 1,
+      "id": "f6a10e82-ee79-417b-a4a2-f99b046678a1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloud.llamaindex.ai/api/parsing/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "result_type",
+              "value": "markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1584,
+        944
+      ],
+      "id": "35b7b209-7f18-4004-845c-890ca1522cc8",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "4Ng0dLRGFSzUb4P7",
+          "name": "Bearer Auth llama cloud"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1824,
+        944
+      ],
+      "id": "e0ceee1d-1ef1-4e1c-b97e-6c27bdf9b122",
+      "name": "Wait",
+      "webhookId": "5162723f-3584-41b4-89e5-ea3453e3187d"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/parsing/job/{{ $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2032,
+        944
+      ],
+      "id": "b8525e4a-e52b-40b3-9d81-2215e08a7f57",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "4Ng0dLRGFSzUb4P7",
+          "name": "Bearer Auth llama cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d331f69f-fd48-46ab-979c-4e9e90a3b90c",
+              "leftValue": "={{$json.status}}",
+              "rightValue": "SUCCESS",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2240,
+        944
+      ],
+      "id": "ac2d9c60-3689-4990-9dfd-30a49fbbfed0",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/parsing/job/{{$json.id}}/result/markdown",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "{\n  \"result_type\":\"markdown\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2480,
+        928
+      ],
+      "id": "02f30c77-959b-4413-83fb-14af7dbbe336",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "4Ng0dLRGFSzUb4P7",
+          "name": "Bearer Auth llama cloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a system that prepares documents for semantic search (RAG).\n\nYour task is to transform the input text into structured, high-quality chunks with metadata.\n\nOUTPUT FORMAT (STRICT):\nReturn a JSON array of objects. Each object must have:\n\n{\n  \"text\": \"string\",\n  \"source\": \"string\",\n  \"chunk_index\": number,\n  \"chunk_id\": string\n}\n\n- content: the cleaned and structured chunk text\n- source: a short identifier of the document (infer from context if not provided, otherwise use \"unknown\")\n- chunk_index: incremental index starting from 0\n- chunk_id: must be exactly source + \"_\" + chunk_index\n\nRULES:\n\n1. Each chunk must contain COMPLETE information.\n   - Minimum 3 sentences per chunk.\n   - Maximum ~150 words.\n\n2. DO NOT create small or meaningless chunks.\n   - Avoid titles alone.\n   - Avoid slogans, headers, or isolated phrases.\n\n3. NEVER create a chunk that is only a title, heading, label, or course name.\n   - If the text does not contain explanatory or actionable information, DISCARD it.\n\n4. Group related content into the same chunk.\n   - Merge paragraphs that belong to the same topic.\n\n5. Remove noise:\n   - Ignore branding, slogans, repeated headers, or irrelevant text.\n\n6. Preserve meaning:\n   - Do not lose important information.\n   - Keep explanations complete.\n\n7. Prefer fewer high-quality chunks over many small ones.\n\n8. Do NOT split sentences.\n   - Each chunk must start and end at natural sentence boundaries.\n\n9. Ignore:\n   - legal disclaimers\n   - institutional policies\n   - generic company descriptions\n\n10. Only include information that helps answer real user questions.\n\n11. Useful information includes:\n   - skills learned\n   - technologies used\n   - how something works\n   - steps, processes, or explanations\n   - outcomes, results, or capabilities\n\n12. Exclude vague or generic content such as:\n   - \"this course is constantly updated\"\n   - \"high quality experience\"\n   - \"designed for the modern world\"\n   - any generic marketing language\n\n13. Each chunk must be information-dense.\n   - Avoid chunks that are too general, repetitive, or low in informational value.\n\n14. Prioritize technical, educational, or explanatory content over descriptive or promotional text.\n\n15. If a chunk contains multiple distinct topics, split them into separate chunks.\n\n16. Avoid duplicate chunks:\n   - If multiple parts of the text repeat the same idea or phrase, include it only once.\n   - Do NOT generate semantically redundant chunks.\n\n17. Each chunk must provide UNIQUE value.\n   - If removing the chunk does not reduce the overall understanding, DISCARD it.\n\n18. Discard low-value text:\n   - Standalone titles\n   - Section names\n   - Navigation elements\n   - Repeated course names\n   - Any content shorter than 2 full sentences\n\n19. Metadata rules:\n   - chunk_index must increment sequentially (0, 1, 2, ...)\n   - source must be consistent across all chunks from the same input\n   - If a clear title, filename, or context exists, use it as source\n   - If not, use \"unknown\"\n   - chunk_id must follow: source + \"_\" + chunk_index\n\n20. Quality over quantity:\n   - It is better to return fewer chunks than to include low-quality ones.\n\n21. DO NOT include explanations outside the JSON.\n\nIMPORTANT:\n- Return ONLY valid JSON\n- Escape all quotes inside strings using \\\"\n- Do not include markdown (no ```json)\n\nReturn ONLY the JSON array.\n\nTEXT: {{ $json.markdown || $json.content }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        2688,
+        928
+      ],
+      "id": "404fd495-536a-4d9b-927a-7ba2cc180c56",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rc3IIqpQcDKATvsl",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtener el texto correcto\nconst raw = $json.content.parts[0].text;\n\n// 2. Limpiar ```json\nconst cleaned = raw\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\n// 3. Parsear JSON\nconst parsed = JSON.parse(cleaned);\n\n// 4. Mapear al formato que querés\nconst result = parsed.map(item => ({\n  text: item.text || \"\",\n  summary: item.summary || \"\",\n  keywords: item.keywords || [],\n  source: item.source || \"\",\n  chunk_index: item.chunk_index ?? 0,\n  chunk_id: item.chunk_id || \"\"\n}));\n\n// 5. Output n8n\nreturn result.map(r => ({ json: r }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3024,
+        928
+      ],
+      "id": "72c1bb37-fe92-4100-8c66-911b486e3e2f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 336,
+        "width": 1920,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1456,
+        848
+      ],
+      "typeVersion": 1,
+      "id": "f24bfc89-6b5c-4e76-b787-4d006b76d39f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 400,
+        "width": 582,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3552,
+        736
+      ],
+      "typeVersion": 1,
+      "id": "4e92ca68-d12b-4690-8bbe-512ad05a3fdf",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        3760,
+        768
+      ],
+      "id": "42b4d263-9aba-4bd4-93d7-e12cb5234b25",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "OvjqC2Nun5s5rjYS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3696,
+        976
+      ],
+      "id": "1f21bc55-9ca0-427a-9406-9ff45fcd3c45",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rc3IIqpQcDKATvsl",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{$json.text}}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "sumary",
+                "value": "={{ $json.summary}}"
+              },
+              {
+                "name": "Keywords",
+                "value": "={{$json.keywords}}"
+              },
+              {
+                "name": "sourse",
+                "value": "={{$json.source}}"
+              },
+              {
+                "name": "=chunk_index",
+                "value": "={{$json.chunk_index}}"
+              },
+              {
+                "name": "=chunk_id",
+                "value": "={{$json.chunk_id}}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        3904,
+        976
+      ],
+      "id": "93832a01-5e70-4ff3-8090-d466bb8d3b0a",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        2128,
+        528
+      ],
+      "id": "0121811a-6d0e-4235-9715-a5e3bf88f3ab",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 272,
+        "width": 688,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1952,
+        464
+      ],
+      "typeVersion": 1,
+      "id": "e41bf2bf-3ef7-4ef5-9a6c-a0857e3dee3e",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// Caso 1: múltiples items (lo más común en n8n)\nif (items.length > 1) {\n  return items.map((item, index) => {\n    const d = item.json;\n\n    return {\n      json: {\n        text: `ID: ${d.ID}, Nombre: ${d.Nombre}, Edad: ${d.Edad}, Pais: ${d.Pais}, IngresoMensual: ${d.IngresoMensual}`,\n        source: \"ejemplo_datos\",\n        chunk_index: index,\n        chunk_id: `ejemplo_datos_${index}`\n      }\n    };\n  });\n}\n\n// Caso 2: un solo item con array adentro\nlet data = items[0].json;\n\n// si viene como { data: [...] }\nif (Array.isArray(data.data)) {\n  data = data.data;\n}\n\n// si viene como array directo\nelse if (Array.isArray(data)) {\n  // ok\n}\n\n// si viene como objeto único\nelse {\n  data = [data];\n}\n\nreturn data.map((item, index) => {\n  return {\n    json: {\n      text: `ID: ${item.ID}, Nombre: ${item.Nombre}, Edad: ${item.Edad}, Pais: ${item.Pais}, IngresoMensual: ${item.IngresoMensual}`,\n      source: \"ejemplo_datos\",\n      chunk_index: index,\n      chunk_id: `ejemplo_datos_${index}`\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2352,
+        528
+      ],
+      "id": "e7c8ec3d-110a-4480-a589-757db71b907e",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        288,
+        -800
+      ],
+      "id": "88efbdd0-a428-4bd1-b9c0-65a11dab7f0a",
+      "name": "Telegram Trigger",
+      "webhookId": "5eeba18c-0a6d-4a80-8bde-1bfcb5400259",
+      "credentials": {
+        "telegramApi": {
+          "id": "ParkL6SanSQxx3wo",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "load",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "prompt": "={{$('Telegram Trigger').item.json.message.text}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        496,
+        -800
+      ],
+      "id": "66b3ef30-b63d-4bbc-b9f4-4d3cb4db9b6a",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "OvjqC2Nun5s5rjYS",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        496,
+        -624
+      ],
+      "id": "51a857fd-c0c3-49d3-861c-41cdfeddec23",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rc3IIqpQcDKATvsl",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "fragmentos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -800
+      ],
+      "id": "76226b75-fd0b-4f8d-b917-1b0a76deb7a3",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Pregunta: {{ $('Telegram Trigger').item.json.message.text }}\nFragmentos: {{ JSON.stringify($('Aggregate').item.json.fragmentos) }}",
+        "options": {
+          "systemMessage": "=Sos un asistente experto en odontología e historia de la medicina.\n\nTu tarea es responder preguntas ÚNICAMENTE utilizando la información proporcionada en el contexto.\n\n---------------------\nREGLAS IMPORTANTES\n---------------------\n\n1. Respondé SOLO con información del contexto.\n2. NO inventes información.\n3. Si la respuesta no está en el contexto, decí exactamente:\n   \"No se encontró información en el documento.\"\n4. No agregues conocimientos externos.\n5. Sé claro, preciso y bien estructurado.\n6. Si corresponde, resumí la información.\n7. Respondé en español.\n\n---------------------\nFORMATO DE RESPUESTA\n---------------------\n\n- Respuesta clara y directa.\n- Si aplica, podés usar viñetas.\n- No menciones el contexto ni el documento explícitamente."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1088,
+        -800
+      ],
+      "id": "ed0b75d2-0ef2-42e4-8a06-78c19ba65032",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        -608
+      ],
+      "id": "950348ce-9633-437d-bc7a-4ecf8702f8c1",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rc3IIqpQcDKATvsl",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{$('Telegram Trigger').item.json.message.chat.id}}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1232,
+        -592
+      ],
+      "id": "b40b911d-4fb8-4925-a721-0b86d1ecbaae",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"models/gemini-embedding-001\",\n  \"content\": {\n    \"parts\": [{ \"text\": \"{{$('Supabase Vector Store1').item.json.document.pageContent}}\" }]\n  }\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        944,
+        -368
+      ],
+      "id": "77500612-0127-464f-adf3-969fbcabec32",
+      "name": "HTTP Request3",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "iqlEzrzibljYAexM",
+          "name": "Header Auth Gemini"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1824,
+        -592
+      ],
+      "id": "63b58423-1d41-4514-b98f-8548ef014925",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$('Generador Score').item.json.finalScore}}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gte"
+                    },
+                    "id": "41b57e27-0d4a-40be-a870-346ce2ace6b6"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Ok"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1bfdbe09-fd69-4559-8d75-3a1040284fee",
+                    "leftValue": "={{$('Contador').item.json.counter}}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "paso reintentos"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2432,
+        -592
+      ],
+      "id": "b4d8ec71-8b3c-454e-a4a0-f3fb33a82cc5",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "content": "# 1. Api REST (v)\n# 2. Webhooks (v)\n# 3. Fallbacks\n# 4. Observabilidad\n# 5. RAG (v)\n# 6. multimodalidad\n# 7. Human-in-the-Loop\n# 8. Autoevaluación (v)",
+        "height": 480,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        -1440
+      ],
+      "typeVersion": 1,
+      "id": "57f81e70-79a2-49d0-b866-c00aeca491d8",
+      "name": "Sticky Note16",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- INPUT ---\nconst items = $input.all();\n\n// embedding respuesta\nconst responseEmbedding = items[0].json.embedding.values;\n\n// embeddings fragmentos\nconst fragmentEmbeddings = items\n    .slice(1)\n    .map(item => item.json.embedding.values);\n\n// --- COSINE SIMILARITY ---\nfunction cosineSimilarity(a, b) {\n    if (!a || !b || a.length !== b.length) return 0;\n\n    let dot = 0, normA = 0, normB = 0;\n\n    for (let i = 0; i < a.length; i++) {\n        dot += a[i] * b[i];\n        normA += a[i] * a[i];\n        normB += b[i] * b[i];\n    }\n\n    if (normA === 0 || normB === 0) return 0;\n\n    return dot / (Math.sqrt(normA) * Math.sqrt(normB));\n}\n\n// --- 1. SIMILITUDES ---\nconst similarities = fragmentEmbeddings.map(f =>\n    cosineSimilarity(responseEmbedding, f)\n);\n\n// --- 2. TOP-K ---\nconst K = 3;\nconst sorted = [...similarities].sort((a, b) => b - a);\nconst topK = sorted.slice(0, K);\n\n// --- 3. PROMEDIO TOP-K ---\nconst avgTopK = topK.reduce((a, b) => a + b, 0) / topK.length;\n\n// --- 4. BONUS POR CONSISTENCIA (opcional) ---\n// si más de 2 fragmentos son bastante similares → suma confianza\nconst strongMatches = similarities.filter(s => s > 0.75).length;\nconst consistencyBonus = Math.min(strongMatches * 0.02, 0.05);\n\n// --- 5. SCORE FINAL ---\nconst finalScore = Math.min(avgTopK + consistencyBonus, 1);\n\n// --- OUTPUT ---\nreturn [\n  {\n    json: {\n      finalScore,\n      avgTopK,\n      consistencyBonus,\n      similarities,\n      topK,\n      fragmentCount: similarities.length\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2016,
+        -592
+      ],
+      "id": "729f6419-daec-4ffe-b581-565269e2755b",
+      "name": "Generador Score"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener almacenamiento global del workflow\nconst globalData = $getWorkflowStaticData('global');\n\n// Inicializar si no existe\nif (globalData.counter === undefined) {\n  globalData.counter = 0;\n}\n\n// Incrementar contador\nglobalData.counter += 1;\n\n// Devolver resultado\nreturn items.map(item => ({\n  json: {\n    ...item.json,\n    counter: globalData.counter\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        -592
+      ],
+      "id": "3b7ddbc3-03ed-4f50-9f72-78537b9c7f11",
+      "name": "Contador"
+    },
+    {
+      "parameters": {
+        "chatId": "={{$('Telegram Trigger').item.json.message.chat.id}}",
+        "text": "={{$('AI Agent').item.json.output}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2944,
+        -800
+      ],
+      "id": "46b8e2b5-7816-4678-90c2-3327e3493ec4",
+      "name": "Send a text message",
+      "webhookId": "c7df0f42-0fbd-4428-8c83-366bec3592f6",
+      "credentials": {
+        "telegramApi": {
+          "id": "ParkL6SanSQxx3wo",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{$('Telegram Trigger').item.json.message.chat.id}}",
+        "text": "Lo siento, no pude generar una respuesta médica confiable. \nTe recomiendo reformular la pregunta o consultar con un profesional.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2944,
+        -608
+      ],
+      "id": "c2eb2040-b85e-4ac6-b60f-6bb060e0d745",
+      "name": "Send a text message1",
+      "webhookId": "c7df0f42-0fbd-4428-8c83-366bec3592f6",
+      "credentials": {
+        "telegramApi": {
+          "id": "ParkL6SanSQxx3wo",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Acceder al almacenamiento global del workflow\nconst globalData = $getWorkflowStaticData('global');\n\n// Resetear contador\nglobalData.counter = 0;\n\n// (Opcional) devolver info para debug\nreturn items.map(item => ({\n  json: {\n    ...item.json,\n    counter: globalData.counter,\n    message: \"Counter reseteado a 0\"\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3248,
+        -720
+      ],
+      "id": "8d44bf27-6b18-4777-8a19-41bbe405625d",
+      "name": "Reseteo de contador"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        -160
+      ],
+      "id": "f6285862-1d0e-41e0-8020-acff906e8a53",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rc3IIqpQcDKATvsl",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{$('Telegram Trigger').item.json.message.chat.id}}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2704,
+        -160
+      ],
+      "id": "e056b0f0-6e59-438e-8315-4ffbd1b33ea1",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Pregunta: {{$('Telegram Trigger').item.json.message.text}}\n\nRespuesta original:{{$('Unificar respuestas de ia').item.json.output}}\n\nChunks recuperados: {{ JSON.stringify($('Aggregate').item.json.fragmentos) }}\n\n",
+        "options": {
+          "systemMessage": "Sos un asistente experto en corrección de respuestas en sistemas RAG.\n\nTu tarea es generar una NUEVA RESPUESTA corregida y mejorada.\n\nRecibirás:\n- Una \"Respuesta original\" (que puede ser incorrecta o incompleta)\n- Una \"Pregunta\"\n- \"Chunks recuperados\" (fuente de verdad)\n\n--------------------------------------------------\nOBJETIVO\n--------------------------------------------------\nComenzá la respuesta con un identificador único como \"Versión 1:\" y luego la respuesta.\n\nGenerar una respuesta NUEVA que:\n- Responda correctamente la pregunta\n- Esté basada SOLO en los chunks\n- Corrija errores de la respuesta original\n- Complete información faltante si es posible\n\n--------------------------------------------------\nREGLAS IMPORTANTES\n--------------------------------------------------\n\n1. Usá únicamente la información de los chunks.\n2. NO inventes datos.\n3. NO uses conocimiento externo.\n4. Ignorá completamente cualquier parte incorrecta de la respuesta original.\n5. Si la respuesta original es útil, podés mejorarla.\n6. Si la respuesta original es incorrecta, rehacela desde cero.\n7. Si no hay suficiente información en los chunks, respondé exactamente:\n   \"No se encontró información en el documento.\"\n\n--------------------------------------------------\nESTILO DE RESPUESTA\n--------------------------------------------------\n\n- Clara y directa\n- Bien estructurada\n- Podés usar viñetas si ayuda\n- En español\n- Sin mencionar los chunks ni el proceso\n\n\nDevolvé SOLO la respuesta final corregida.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2688,
+        -368
+      ],
+      "id": "65b63803-5c21-4860-ab88-ae7096d27530",
+      "name": "IA Corrector"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"output\": \"{{$json.output}}\",\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1440,
+        -784
+      ],
+      "id": "35eb5b7d-aadc-4292-9c0f-2994778196f7",
+      "name": "Unificar respuestas de ia"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"models/gemini-embedding-001\",\n  \"content\": {\n    \"parts\": [{ \"text\": {{ JSON.stringify($('Unificar respuestas de ia').item.json.output) }} }]\n  }\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1648,
+        -784
+      ],
+      "id": "b825d012-5c24-4fa1-9eee-53b4509c008b",
+      "name": "Vectorizador respuesta",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "iqlEzrzibljYAexM",
+          "name": "Header Auth Gemini"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 1008,
+        "width": 3328
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        224,
+        -896
+      ],
+      "typeVersion": 1,
+      "id": "e88a9423-27f2-4318-b0c4-2892db0cfd2c",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 1360,
+        "width": 4422
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        48,
+        288
+      ],
+      "typeVersion": 1,
+      "id": "9e6024bb-e6bd-46d6-8abf-9b5b5d5745a9",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1552,
+        -96
+      ],
+      "id": "c6918af9-50f0-4ff7-ae86-afd39732c161",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZDc22wHfMLINIevk",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        496,
+        1920
+      ],
+      "id": "e0c23f45-83da-435e-8c98-5333ba520dca",
+      "name": "Error Trigger",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        768,
+        1920
+      ],
+      "id": "5ec99b08-ec2b-4c51-a0af-8277889a7a87",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZDc22wHfMLINIevk",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 507696337,
+          "message": {
+            "message_id": 35,
+            "from": {
+              "id": 8722030592,
+              "is_bot": false,
+              "first_name": "Maximiliano",
+              "last_name": "Rosanda",
+              "language_code": "es"
+            },
+            "chat": {
+              "id": 8722030592,
+              "first_name": "Maximiliano",
+              "last_name": "Rosanda",
+              "type": "private"
+            },
+            "date": 1776903120,
+            "text": "que es la odontologia??"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Unificar respuestas de ia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Generador Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generador Score": {
+      "main": [
+        [
+          {
+            "node": "Contador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contador": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "IA Corrector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message1": {
+      "main": [
+        [
+          {
+            "node": "Reseteo de contador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Reseteo de contador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reseteo de contador": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "IA Corrector",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "IA Corrector",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA Corrector": {
+      "main": [
+        [
+          {
+            "node": "Unificar respuestas de ia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unificar respuestas de ia": {
+      "main": [
+        [
+          {
+            "node": "Vectorizador respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vectorizador respuesta": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0fc844f0-7418-4b8a-929c-316676d70f3c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c7b31977a1d8a788524451e091bfb2aa41fe01b91c4beac223ed036d4596a163"
+  },
+  "id": "LksXpoaBzsQVecUR",
+  "tags": []
+}
