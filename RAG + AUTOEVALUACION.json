@@ -29,7 +29,7 @@
       "name": "Google Drive Trigger",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "iCwexu6NZb6Zji2u",
+          "id": "fEsUI3oqwJptZ1W0",
           "name": "Google Drive account"
         }
       }
@@ -62,7 +62,7 @@
       "name": "Download file",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "iCwexu6NZb6Zji2u",
+          "id": "fEsUI3oqwJptZ1W0",
           "name": "Google Drive account"
         }
       }
@@ -480,8 +480,8 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        288,
-        -800
+        -1328,
+        -560
       ],
       "id": "88efbdd0-a428-4bd1-b9c0-65a11dab7f0a",
       "name": "Telegram Trigger",
@@ -502,14 +502,14 @@
           "mode": "list",
           "cachedResultName": "documents"
         },
-        "prompt": "={{$('Telegram Trigger').item.json.message.text}}",
+        "prompt": "={{$('Edit Fields1').item.json.message.text}}",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        496,
-        -800
+        448,
+        -576
       ],
       "id": "66b3ef30-b63d-4bbc-b9f4-4d3cb4db9b6a",
       "name": "Supabase Vector Store1",
@@ -527,8 +527,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "typeVersion": 1,
       "position": [
-        496,
-        -624
+        416,
+        -368
       ],
       "id": "51a857fd-c0c3-49d3-861c-41cdfeddec23",
       "name": "Embeddings Google Gemini1",
@@ -541,23 +541,8 @@
     },
     {
       "parameters": {
-        "aggregate": "aggregateAllItemData",
-        "destinationFieldName": "fragmentos",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.aggregate",
-      "typeVersion": 1,
-      "position": [
-        880,
-        -800
-      ],
-      "id": "76226b75-fd0b-4f8d-b917-1b0a76deb7a3",
-      "name": "Aggregate"
-    },
-    {
-      "parameters": {
         "promptType": "define",
-        "text": "=Pregunta: {{ $('Telegram Trigger').item.json.message.text }}\nFragmentos: {{ JSON.stringify($('Aggregate').item.json.fragmentos) }}",
+        "text": "=Pregunta: {{ $('Telegram Trigger').item.json.message.text }}\nFragmentos: {{ JSON.stringify($('Unificador Fragmentos').item.json.contexto) }}",
         "options": {
           "systemMessage": "=Sos un asistente experto en odontología e historia de la medicina.\n\nTu tarea es responder preguntas ÚNICAMENTE utilizando la información proporcionada en el contexto.\n\n---------------------\nREGLAS IMPORTANTES\n---------------------\n\n1. Respondé SOLO con información del contexto.\n2. NO inventes información.\n3. Si la respuesta no está en el contexto, decí exactamente:\n   \"No se encontró información en el documento.\"\n4. No agregues conocimientos externos.\n5. Sé claro, preciso y bien estructurado.\n6. Si corresponde, resumí la información.\n7. Respondé en español.\n\n---------------------\nFORMATO DE RESPUESTA\n---------------------\n\n- Respuesta clara y directa.\n- Si aplica, podés usar viñetas.\n- No menciones el contexto ni el documento explícitamente."
         }
@@ -565,8 +550,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        1088,
-        -800
+        1216,
+        -688
       ],
       "id": "ed0b75d2-0ef2-42e4-8a06-78c19ba65032",
       "name": "AI Agent"
@@ -578,8 +563,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        1072,
-        -608
+        1216,
+        -512
       ],
       "id": "950348ce-9633-437d-bc7a-4ecf8702f8c1",
       "name": "Google Gemini Chat Model",
@@ -598,50 +583,11 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        1232,
-        -592
+        1344,
+        -496
       ],
       "id": "b40b911d-4fb8-4925-a721-0b86d1ecbaae",
       "name": "Simple Memory"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"models/gemini-embedding-001\",\n  \"content\": {\n    \"parts\": [{ \"text\": \"{{$('Supabase Vector Store1').item.json.document.pageContent}}\" }]\n  }\n} ",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        944,
-        -368
-      ],
-      "id": "77500612-0127-464f-adf3-969fbcabec32",
-      "name": "HTTP Request3",
-      "retryOnFail": true,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "iqlEzrzibljYAexM",
-          "name": "Header Auth Gemini"
-        }
-      },
-      "onError": "continueErrorOutput"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        1824,
-        -592
-      ],
-      "id": "63b58423-1d41-4514-b98f-8548ef014925",
-      "name": "Merge"
     },
     {
       "parameters": {
@@ -658,7 +604,7 @@
                 "conditions": [
                   {
                     "leftValue": "={{$('Generador Score').item.json.finalScore}}",
-                    "rightValue": 1,
+                    "rightValue": 0.6,
                     "operator": {
                       "type": "number",
                       "operation": "gte"
@@ -712,7 +658,7 @@
     },
     {
       "parameters": {
-        "content": "# 1. Api REST (v)\n# 2. Webhooks (v)\n# 3. Fallbacks\n# 4. Observabilidad\n# 5. RAG (v)\n# 6. multimodalidad\n# 7. Human-in-the-Loop\n# 8. Autoevaluación (v)",
+        "content": "# 1. Api REST (v)\n# 2. Webhooks (v)\n# 3. Fallbacks (v)\n# 4. Observabilidad (v)\n# 5. RAG (v)\n# 6. multimodalidad (v)\n# 7. Human-in-the-Loop (v)\n# 8. Autoevaluación (v)",
         "height": 480,
         "width": 464
       },
@@ -728,7 +674,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// --- INPUT ---\nconst items = $input.all();\n\n// embedding respuesta\nconst responseEmbedding = items[0].json.embedding.values;\n\n// embeddings fragmentos\nconst fragmentEmbeddings = items\n    .slice(1)\n    .map(item => item.json.embedding.values);\n\n// --- COSINE SIMILARITY ---\nfunction cosineSimilarity(a, b) {\n    if (!a || !b || a.length !== b.length) return 0;\n\n    let dot = 0, normA = 0, normB = 0;\n\n    for (let i = 0; i < a.length; i++) {\n        dot += a[i] * b[i];\n        normA += a[i] * a[i];\n        normB += b[i] * b[i];\n    }\n\n    if (normA === 0 || normB === 0) return 0;\n\n    return dot / (Math.sqrt(normA) * Math.sqrt(normB));\n}\n\n// --- 1. SIMILITUDES ---\nconst similarities = fragmentEmbeddings.map(f =>\n    cosineSimilarity(responseEmbedding, f)\n);\n\n// --- 2. TOP-K ---\nconst K = 3;\nconst sorted = [...similarities].sort((a, b) => b - a);\nconst topK = sorted.slice(0, K);\n\n// --- 3. PROMEDIO TOP-K ---\nconst avgTopK = topK.reduce((a, b) => a + b, 0) / topK.length;\n\n// --- 4. BONUS POR CONSISTENCIA (opcional) ---\n// si más de 2 fragmentos son bastante similares → suma confianza\nconst strongMatches = similarities.filter(s => s > 0.75).length;\nconst consistencyBonus = Math.min(strongMatches * 0.02, 0.05);\n\n// --- 5. SCORE FINAL ---\nconst finalScore = Math.min(avgTopK + consistencyBonus, 1);\n\n// --- OUTPUT ---\nreturn [\n  {\n    json: {\n      finalScore,\n      avgTopK,\n      consistencyBonus,\n      similarities,\n      topK,\n      fragmentCount: similarities.length\n    }\n  }\n];"
+        "jsCode": "// --- EMBEDDING RESPUESTA (CORREGIDO) ---\nconst responseItem = $items(\"Vectorizador respuesta\", 0, 0)[0];\nconst responseEmbedding = responseItem.json.embedding.values;\n\n// --- EMBEDDINGS FRAGMENTOS ---\nconst fragmentItems = $items(\"Vectorizacion fragmentos\", 0);\nconst fragmentEmbeddings = fragmentItems.map(item => item.json.embedding.values);\n\n// --- COSINE SIMILARITY ---\nfunction cosineSimilarity(a, b) {\n    if (!a || !b || a.length !== b.length) return 0;\n\n    let dot = 0, normA = 0, normB = 0;\n\n    for (let i = 0; i < a.length; i++) {\n        dot += a[i] * b[i];\n        normA += a[i] * a[i];\n        normB += b[i] * b[i];\n    }\n\n    if (normA === 0 || normB === 0) return 0;\n\n    return dot / (Math.sqrt(normA) * Math.sqrt(normB));\n}\n\n// --- 1. SIMILITUDES ---\nconst similarities = fragmentEmbeddings.map(f =>\n    cosineSimilarity(responseEmbedding, f)\n);\n\n// --- 2. TOP-K ---\nconst K = 3;\nconst sorted = [...similarities].sort((a, b) => b - a);\nconst topK = sorted.slice(0, K);\n\n// --- 3. PROMEDIO TOP-K ---\nconst avgTopK = topK.reduce((a, b) => a + b, 0) / topK.length;\n\n// --- 4. BONUS POR CONSISTENCIA ---\nconst strongMatches = similarities.filter(s => s > 0.75).length;\nconst consistencyBonus = Math.min(strongMatches * 0.02, 0.05);\n\n// --- 5. SCORE FINAL ---\nconst finalScore = Math.min(avgTopK + consistencyBonus, 1);\n\n// --- OUTPUT ---\nreturn [\n  {\n    json: {\n      finalScore,\n      avgTopK,\n      consistencyBonus,\n      similarities,\n      topK,\n      fragmentCount: similarities.length\n    }\n  }\n];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -777,13 +723,13 @@
     {
       "parameters": {
         "chatId": "={{$('Telegram Trigger').item.json.message.chat.id}}",
-        "text": "Lo siento, no pude generar una respuesta médica confiable. \nTe recomiendo reformular la pregunta o consultar con un profesional.",
+        "text": "={{ $('Send a message').item?.json?.data?.text ? $('Send a message').item?.json?.data?.text : \"no hay respuesta\" }}",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2944,
+        2992,
         -608
       ],
       "id": "c2eb2040-b85e-4ac6-b60f-6bb060e0d745",
@@ -845,7 +791,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Pregunta: {{$('Telegram Trigger').item.json.message.text}}\n\nRespuesta original:{{$('Unificar respuestas de ia').item.json.output}}\n\nChunks recuperados: {{ JSON.stringify($('Aggregate').item.json.fragmentos) }}\n\n",
+        "text": "=Pregunta: {{$('Telegram Trigger').item.json.message.text}}\n\nRespuesta original:{{$('Unificar respuestas de ia').item.json.output}}\n\nChunks recuperados:{{ JSON.stringify($('Unificador Fragmentos').item.json.contexto) }}\n\n",
         "options": {
           "systemMessage": "Sos un asistente experto en corrección de respuestas en sistemas RAG.\n\nTu tarea es generar una NUEVA RESPUESTA corregida y mejorada.\n\nRecibirás:\n- Una \"Respuesta original\" (que puede ser incorrecta o incompleta)\n- Una \"Pregunta\"\n- \"Chunks recuperados\" (fuente de verdad)\n\n--------------------------------------------------\nOBJETIVO\n--------------------------------------------------\nComenzá la respuesta con un identificador único como \"Versión 1:\" y luego la respuesta.\n\nGenerar una respuesta NUEVA que:\n- Responda correctamente la pregunta\n- Esté basada SOLO en los chunks\n- Corrija errores de la respuesta original\n- Complete información faltante si es posible\n\n--------------------------------------------------\nREGLAS IMPORTANTES\n--------------------------------------------------\n\n1. Usá únicamente la información de los chunks.\n2. NO inventes datos.\n3. NO uses conocimiento externo.\n4. Ignorá completamente cualquier parte incorrecta de la respuesta original.\n5. Si la respuesta original es útil, podés mejorarla.\n6. Si la respuesta original es incorrecta, rehacela desde cero.\n7. Si no hay suficiente información en los chunks, respondé exactamente:\n   \"No se encontró información en el documento.\"\n\n--------------------------------------------------\nESTILO DE RESPUESTA\n--------------------------------------------------\n\n- Clara y directa\n- Bien estructurada\n- Podés usar viñetas si ayuda\n- En español\n- Sin mencionar los chunks ni el proceso\n\n\nDevolvé SOLO la respuesta final corregida.\n"
         }
@@ -868,8 +814,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1440,
-        -784
+        1536,
+        -576
       ],
       "id": "35eb5b7d-aadc-4292-9c0f-2994778196f7",
       "name": "Unificar respuestas de ia"
@@ -888,8 +834,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1648,
-        -784
+        1760,
+        -576
       ],
       "id": "b825d012-5c24-4fa1-9eee-53b4509c008b",
       "name": "Vectorizador respuesta",
@@ -906,11 +852,11 @@
       "parameters": {
         "content": "",
         "height": 1008,
-        "width": 3328
+        "width": 5088
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        224,
+        -1440,
         -896
       ],
       "typeVersion": 1,
@@ -937,19 +883,63 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
+          "value": "1nNsEbOcUbVidouZg2yOrEdkhEJGljCqeGt-r5HvEF-4",
           "mode": "list",
-          "value": ""
+          "cachedResultName": "odontologo error embendding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nNsEbOcUbVidouZg2yOrEdkhEJGljCqeGt-r5HvEF-4/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
+          "value": "gid=0",
           "mode": "list",
-          "value": ""
-        }
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nNsEbOcUbVidouZg2yOrEdkhEJGljCqeGt-r5HvEF-4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "document",
+              "displayName": "document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1552,
+        1664,
         -96
       ],
       "id": "c6918af9-50f0-4ff7-ae86-afd39732c161",
@@ -959,65 +949,300 @@
           "id": "ZDc22wHfMLINIevk",
           "name": "Google Sheets account"
         }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.errorTrigger",
-      "typeVersion": 1,
-      "position": [
-        496,
-        1920
-      ],
-      "id": "e0c23f45-83da-435e-8c98-5333ba520dca",
-      "name": "Error Trigger",
-      "disabled": true
+      }
     },
     {
       "parameters": {
-        "operation": "append",
-        "documentId": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
-        },
-        "sheetName": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
+        "operation": "sendAndWait",
+        "sendTo": "maxi_rosanda@hotmail.com",
+        "subject": "Pedido de generación de respuesta",
+        "message": "=Pregunta: {{$('Telegram Trigger').item.json.message.text}}\n\nRespuesta original:{{$('Unificar respuestas de ia').item.json.output}}\n\nChunks recuperados: {{ JSON.stringify($('Unificador Fragmentos').item.json.contexto) }}}\n",
+        "responseType": "freeText",
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "resumeUnit": "minutes"
+            }
+          }
         }
       },
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.7,
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
       "position": [
-        768,
-        1920
+        2768,
+        -608
       ],
-      "id": "5ec99b08-ec2b-4c51-a0af-8277889a7a87",
-      "name": "Append row in sheet1",
+      "id": "c63013ca-9b27-4a4c-977c-0fff8a959184",
+      "name": "Send a message",
+      "webhookId": "40eceabb-106d-4e9f-9ae3-012f25032611",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "ZDc22wHfMLINIevk",
-          "name": "Google Sheets account"
+        "gmailOAuth2": {
+          "id": "eREIjaCT0HjVHozu",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"models/gemini-embedding-001\",\n  \"content\": {\n    \"parts\": [{ \"text\": {{JSON.stringify($('Supabase Vector Store1').item.json.document.pageContent)}} }]\n  }\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        736,
+        -576
+      ],
+      "id": "77500612-0127-464f-adf3-969fbcabec32",
+      "name": "Vectorizacion fragmentos",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "iqlEzrzibljYAexM",
+          "name": "Header Auth Gemini"
         }
       },
-      "disabled": true
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{$('Telegram Trigger').item.json.message.chat.id}}",
+        "text": "=perdon intente nuevamente mas tardes",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2016,
+        -96
+      ],
+      "id": "e7879fac-c543-48fa-80f8-9de7cd08436e",
+      "name": "Send a text message3",
+      "webhookId": "c7df0f42-0fbd-4428-8c83-366bec3592f6",
+      "credentials": {
+        "telegramApi": {
+          "id": "ParkL6SanSQxx3wo",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Acceder al almacenamiento global del workflow\nconst globalData = $getWorkflowStaticData('global');\n\n// Resetear contador\nglobalData.counter = 0;\n\n// (Opcional) devolver info para debug\nreturn items.map(item => ({\n  json: {\n    ...item.json,\n    counter: globalData.counter,\n    message: \"Counter reseteado a 0\"\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2224,
+        -96
+      ],
+      "id": "c972014e-189e-48db-97d2-29fa6b983b4e",
+      "name": "Reseteo de contador1"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        -96
+      ],
+      "id": "6aa91128-49aa-47e2-b700-2adfe4bc94ef",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Trae los items del nodo específico (en el orden en que los devuelve)\nconst items = $items(\"Supabase Vector Store1\", 0);\n\n// Extraer textos SIN ordenar\nconst textos = items.map(item => item.json.document.pageContent);\n\n// Unir todo\nconst contexto = textos.join(\"\\n\\n\");\n\n// Devolver un único item\nreturn [\n  {\n    json: {\n      contexto\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        -656
+      ],
+      "id": "f14b0880-5db7-480a-9606-5a3d60ac793a",
+      "name": "Unificador Fragmentos"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$('Telegram Trigger').item.json.message.text}}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "edeeac61-313e-4a78-9c48-c2025ce077e6"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "54331b79-b23d-46bf-9555-2cfd55afdf9e",
+                    "leftValue": "={{$('Telegram Trigger').item.json.message.voice}}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1088,
+        -560
+      ],
+      "id": "3191697c-7fd0-432c-a13f-a27a84412de2",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "url": "https://api.telegram.org/bot8680647360:AAEM_-1vB1lFkRV6qh6obUAGabLb6SFBeuU/getFile",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"file_id\":\"{{$('Telegram Trigger').item.json.message.voice.file_id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -816,
+        -464
+      ],
+      "id": "2d28806b-b9ca-41d7-a122-a2967f4afa9e",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot8680647360:AAEM_-1vB1lFkRV6qh6obUAGabLb6SFBeuU/{{$('HTTP Request3').item.json.result.file_path}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -608,
+        -464
+      ],
+      "id": "873f0a95-01f8-4491-8ea4-6f38b47b8b7c",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        -464
+      ],
+      "id": "f68b8932-eccb-4d06-be52-211030964c9b",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Transcribe exactamente el siguiente audio a texto. No agregues comentarios, solo la transcripción:\"\n        },\n        {\n          \"inlineData\": {\n            \"mimeType\": \"audio/ogg\",\n            \"data\": \"{{$('Extract from File1').item.json.data}}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -192,
+        -464
+      ],
+      "id": "da5a0eb5-2b32-4864-b89a-04de5fd70ef3",
+      "name": "HTTP Request5",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "VEow3Vqr8LmqfJlP",
+          "name": "Header Auth Gemini"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"message\":{\n    \"text\":{{$json.candidates[0]?.content?.parts[0]?.text || $json.message.text}}\n  }\n    \n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        128,
+        -624
+      ],
+      "id": "30e529af-ecf9-4b2b-bdcc-65eaafb03e05",
+      "name": "Edit Fields1"
     }
   ],
   "pinData": {
     "Telegram Trigger": [
       {
         "json": {
-          "update_id": 507696337,
+          "update_id": 507696398,
           "message": {
-            "message_id": 35,
+            "message_id": 143,
             "from": {
               "id": 8722030592,
               "is_bot": false,
               "first_name": "Maximiliano",
               "last_name": "Rosanda",
-              "language_code": "es"
+              "language_code": "en"
             },
             "chat": {
               "id": 8722030592,
@@ -1025,9 +1250,169 @@
               "last_name": "Rosanda",
               "type": "private"
             },
-            "date": 1776903120,
-            "text": "que es la odontologia??"
+            "date": 1777341663,
+            "voice": {
+              "duration": 3,
+              "mime_type": "audio/ogg",
+              "file_id": "AwACAgEAAxkBAAOPafAU369e23FRAowVVlcU37GDA0IAAmAIAAKmg4BHIJGmBIDKfS47BA",
+              "file_unique_id": "AgADYAgAAqaDgEc",
+              "file_size": 18221
+            }
           }
+        }
+      }
+    ],
+    "Send a message": [
+      {
+        "json": {
+          "data": {
+            "text": "dsfsadgasdgsdgsdgsd"
+          }
+        }
+      }
+    ],
+    "Supabase Vector Store1": [
+      {
+        "json": {
+          "document": {
+            "pageContent": "En virtud de lo expuesto, la Odontología ha mantenido desde sus orígenes un permanente crecimiento y evolución, superando obstáculos y logrando su independencia como profesión. Ha adoptado variados modelos de práctica terapéutica, conforme las características socio-culturales vigentes en cada época, evolucionando desde el \"sacamuelas\" al actual especialista. Estos modelos han conformado una base de conocimientos y de soluciones creativas como respuesta a las necesidades de la salud bucal.",
+            "metadata": {
+              "loc": {
+                "lines": {
+                  "to": 1,
+                  "from": 1
+                }
+              },
+              "source": "OdontologiaEvolucionHistorica",
+              "blobType": "text/plain",
+              "chunk_id": "OdontologiaEvolucionHistorica_25",
+              "chunk_index": 25
+            }
+          },
+          "score": 0.724987604469433
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "document": {
+            "pageContent": "El presente trabajo se basa en una revisión de la literatura sobre aspectos históricos inherentes a los orígenes de la Odontología como rama de la Medicina, sucesos a través del tiempo que marcaron la evolución hasta lograr su independencia y aquellos hitos que posibilitaron su profesionalización, consolidación y actual estado en el contexto de las Ciencias de la Salud. Asimismo, se analiza el desarrollo de la Odontología en la República Argentina, desde la época del Protomedicato del Río de la Plata hasta la actualidad. El objetivo de esta investigación es brindar un aporte de la historia de la Odontología, propendiendo a su mayor conocimiento, comprensión, divulgación y discusión respecto de problemáticas vinculadas a la ciencia odontológica a través del tiempo, como así también analizar estrategias actuales para superar los nuevos desafíos imperantes.",
+            "metadata": {
+              "loc": {
+                "lines": {
+                  "to": 1,
+                  "from": 1
+                }
+              },
+              "source": "OdontologiaEvolucionHistorica",
+              "blobType": "text/plain",
+              "chunk_id": "OdontologiaEvolucionHistorica_0",
+              "chunk_index": 0
+            }
+          },
+          "score": 0.721473710449118
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "document": {
+            "pageContent": "La última década del siglo XIX y las primeras del XX marcaron las bases de la Odontología moderna en Argentina, caracterizándose por la profesionalización. Este proceso implicó la escolarización, medio por el cual el estado seleccionó a los poseedores del conocimiento científico. Aunque inicialmente bajo la tutela académica de las facultades de medicina, la Odontología fue adquiriendo paulatinamente su autonomía.",
+            "metadata": {
+              "loc": {
+                "lines": {
+                  "to": 1,
+                  "from": 1
+                }
+              },
+              "source": "OdontologiaEvolucionHistorica",
+              "blobType": "text/plain",
+              "chunk_id": "OdontologiaEvolucionHistorica_22",
+              "chunk_index": 22
+            }
+          },
+          "score": 0.705658512970299
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "document": {
+            "pageContent": "En su texto titulado “El sentido de la historia”, Luis Villoro expresa que analizar la historia: “…obedece a un interés general del conocimiento, porque cumple con una función, la de ayudarnos a comprender el presente…parecería que, de no remitirnos a un pasado con el cual conectar nuestro presente, éste resultará incomprensible, gratuito y sin sentido…”. La Odontología posee aspectos relevantes que explican sus orígenes y permiten comprender su actual posicionamiento. Según Cunha, la trayectoria de la profesión odontológica mantiene un paralelismo con el cauce de un gran río: nació en la Mesopotamia asiática, avanzó hacia el antiguo Egipto, alcanzó luego el Mediterráneo, cruzó hacia Grecia, se instaló en Roma, desde donde se dirigió a la Península Ibérica, llegó a Francia, Alemania e Inglaterra y atravesó el Océano Atlántico, dispersándose a lo largo de Estados Unidos y el resto de América, es decir que a lo largo de miles de años sus principales afluentes dieron origen a múltiples",
+            "metadata": {
+              "loc": {
+                "lines": {
+                  "to": 1,
+                  "from": 1
+                }
+              },
+              "source": "OdontologiaEvolucionHistorica",
+              "blobType": "text/plain",
+              "chunk_id": "OdontologiaEvolucionHistorica_2",
+              "chunk_index": 2
+            }
+          },
+          "score": 0.69803348803121
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "HTTP Request3": [
+      {
+        "json": {
+          "ok": true,
+          "result": {
+            "file_id": "AwACAgEAAxkBAAOMafATGI-P0hNU0Hfg6GAGBL5st5cAAlwIAAKmg4BHZA_4byGVgXI7BA",
+            "file_unique_id": "AgADXAgAAqaDgEc",
+            "file_size": 14557,
+            "file_path": "voice/file_12.oga"
+          }
+        }
+      }
+    ],
+    "HTTP Request5": [
+      {
+        "json": {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "Qué es la odontología"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 110,
+            "candidatesTokenCount": 5,
+            "totalTokenCount": 168,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 19
+              },
+              {
+                "modality": "AUDIO",
+                "tokenCount": 91
+              }
+            ],
+            "thoughtsTokenCount": 53
+          },
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "4xTwacjYNoDBz7IP5umgiAk"
         }
       }
     ]
@@ -1216,7 +1601,7 @@
       "main": [
         [
           {
-            "node": "Supabase Vector Store1",
+            "node": "Switch1",
             "type": "main",
             "index": 0
           }
@@ -1238,23 +1623,7 @@
       "main": [
         [
           {
-            "node": "Aggregate",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "HTTP Request3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Aggregate": {
-      "main": [
-        [
-          {
-            "node": "AI Agent",
+            "node": "Vectorizacion fragmentos",
             "type": "main",
             "index": 0
           }
@@ -1294,35 +1663,6 @@
         ]
       ]
     },
-    "HTTP Request3": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ],
-        [
-          {
-            "node": "Append row in sheet",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge": {
-      "main": [
-        [
-          {
-            "node": "Generador Score",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Generador Score": {
       "main": [
         [
@@ -1356,7 +1696,7 @@
         ],
         [
           {
-            "node": "Send a text message1",
+            "node": "Send a message",
             "type": "main",
             "index": 0
           }
@@ -1445,7 +1785,7 @@
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "Generador Score",
             "type": "main",
             "index": 0
           }
@@ -1459,11 +1799,146 @@
         ]
       ]
     },
-    "Error Trigger": {
+    "Send a message": {
       "main": [
         [
           {
-            "node": "Append row in sheet1",
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vectorizacion fragmentos": {
+      "main": [
+        [
+          {
+            "node": "Unificador Fragmentos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message3": {
+      "main": [
+        [
+          {
+            "node": "Reseteo de contador1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unificador Fragmentos": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store1",
             "type": "main",
             "index": 0
           }
@@ -1476,7 +1951,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "0fc844f0-7418-4b8a-929c-316676d70f3c",
+  "versionId": "7d9ce6d1-378c-4cf7-882a-758beac7bc87",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "c7b31977a1d8a788524451e091bfb2aa41fe01b91c4beac223ed036d4596a163"
